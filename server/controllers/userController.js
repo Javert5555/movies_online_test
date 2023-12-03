@@ -3,9 +3,9 @@ const ApiError = require('../error/ApiError')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const generateJwt = (id, email, role) => {
+const generateJwt = (id, username, email, role) => {
     return jwt.sign(
-        { id, email, role },
+        { id, username, email, role },
         process.env.SECRET_KEY,
         {expiresIn: '24h'}
     )
@@ -13,7 +13,10 @@ const generateJwt = (id, email, role) => {
 
 class UserController {
     async registration (req, res, next) {
-        const { email, password, role } = req.body
+        const { username, email, password, role } = req.body
+        if (!username) {
+            return next(ApiError.badRequest('Некорректный username'))
+        }
         if (!email || !password) {
             return next(ApiError.badRequest('Некорректный email или пароль'))
         }
@@ -22,8 +25,8 @@ class UserController {
             return next(ApiError.badRequest('Пользователь с таким email уже существует'))
         }
         const hashPassword = await bcrypt.hash(password, 5)
-        const user = await User.create({ email, role, password: hashPassword })
-        const token = generateJwt(user.id, user.email, user.role)
+        const user = await User.create({ username, email, role, password: hashPassword })
+        const token = generateJwt(user.id, user.username, user.email, user.role)
         return res.json({token})
     }
 
@@ -37,12 +40,12 @@ class UserController {
         if (!comparePassword) {
             return next(ApiError.internal('Некорректный email или пароль'))
         }
-        const token = generateJwt(user.id, user.email, user.password)
+        const token = generateJwt(user.id, user.username, user.email, user.role)
         return res.json({token})
     }
 
     async check (req, res, next) {
-        const token = generateJwt(req.user.id, req.user.email, req.user.role)
+        const token = generateJwt(req.user.id, req.user.username, req.user.email, req.user.role)
         return res.json({ token })
     }
 }
