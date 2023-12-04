@@ -49,7 +49,7 @@ const Signin = () => {
             <input
             style={{display: "block", marginTop: "1rem"}}
                 type='submit'
-                value='Регистрация'
+                value='Войти'
                 onClick={(e) => clickSubmit(e)}
             />
         </form>
