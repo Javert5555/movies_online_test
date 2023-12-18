@@ -5,6 +5,10 @@ class MovieController {
     async create (req, res, next) {
         try {
             const { title, genre, director, issue_year, description, rating } = req.body
+            if (!(await Movie.findOne({where: {genre: genre}}))) {
+                next(ApiError.badRequest('Такой жанр не найден'))
+                return
+            }
             const movie = await Movie.create({ title, genre, director, issue_year, description, rating })
     
             return res.json(movie)

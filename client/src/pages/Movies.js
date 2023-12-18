@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { create, list, remove } from '../api/movies-api'
+import Home from './Home'
 
 const Movies = () => {
     const [moviesList, setMoviesList] = useState([])
@@ -72,9 +73,11 @@ const Movies = () => {
         getMoviesList()
     }, [])
     return (
+        !sessionStorage.getItem('jwt') ?
+        <Home /> :
         <Fragment>
-            <h1>Movies</h1>
-            <form>
+            <h1 style={{textAlign: 'center'}}>Movies</h1>
+            <form style={{border: 'solid black 1px', width: '500px', textAlign: 'center', margin: '1rem auto 3rem'}}>
                 <label>
                     <p>Название фильма</p>
                     <input
@@ -123,14 +126,30 @@ const Movies = () => {
                         onChange={handleChange('rating')}
                     />
                 </label>
-                <input
-                    style={{display: "block", margin: "1rem 0 5rem"}}
-                        type='submit'
-                        value='Добавить'
-                        onClick={(e) => clickSubmit(e)
-                    }
-                />
+                <div style={{textAlign: 'center'}}>
+                    <input
+                        style={{margin: "1rem 0 5rem"}}
+                            type='submit'
+                            value='Добавить'
+                            onClick={(e) => clickSubmit(e)
+                        }
+                    />
+                </div>
             </form>
+            <h2>Список фильм</h2>
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center'
+                    }}
+                >
+                    <p style={{marginRight: '1rem'}}>Название</p>
+                    <p style={{marginRight: '1rem'}}>Жанр</p>
+                    <p style={{marginRight: '1rem'}}>Режиссёр</p>
+                    <p style={{marginRight: '1rem'}}>Дата выхода</p>
+                    <p style={{marginRight: '1rem'}}>Описание</p>
+                    <p style={{marginRight: '1rem'}}>Рейтинг</p>
+                </div>
             <hr
                 style={{
                     color: 'black',
